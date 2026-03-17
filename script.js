@@ -23,6 +23,29 @@ Step 2: VIEW GEOJSON POINT DATA ON MAP
 //      Use the fetch method to access the GeoJSON from your online repository
 //      Convert the response to JSON format and then store the response in your new variable
 
+let injurygeojson; //CREATE EMPTY VARIABLE
+fetch('https://raw.githubusercontent.com/mehana99-sketch/ggr472-lab4/refs/heads/main/data/pedcyc_collision_06-21.geojson')
+    .then(response => response.json()) // Transforms response into JSON
+    .then(response => {
+        console.log(response); // Check response in console (f12 on web)
+        injurygeojson = response; // store geoJSON as variable from URL (fetched)
+    });
+
+map.on('load', () => {
+    map.addSource('injury-points', {
+        type : 'geojson',
+        data : injurygeojson // I could put the raw URL here, but I need it to be a separate variable for turf.js
+    });
+    map.addLayer({
+        'id' : 'Accidents',
+        'type' : 'circle',
+        'source' : 'injury-points',
+        'paint' : {
+            'circle-radius' : 3,
+            'circle-color' : 'pink'
+        }
+    });
+});
 
 
 /*--------------------------------------------------------------------
