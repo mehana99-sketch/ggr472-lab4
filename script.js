@@ -1,10 +1,5 @@
-/*--------------------------------------------------------------------
-GGR472 LAB 4: Incorporating GIS Analysis into web maps using Turf.js 
---------------------------------------------------------------------*/
+// 1. INITALIZE MAP
 
-/*--------------------------------------------------------------------
-Step 1: INITIALIZE MAP
---------------------------------------------------------------------*/
 // Define access token
 mapboxgl.accessToken = 'pk.eyJ1IjoibWVoYW5hLW4iLCJhIjoiY21rb2Zxb24wMDVvbzNlcHhhNGwxc3ZpOCJ9.cldXiKJrisAMpXXAL0qobg'; //****ADD YOUR PUBLIC ACCESS TOKEN*****
 
@@ -16,23 +11,37 @@ const map = new mapboxgl.Map({
     zoom: 11 // starting zoom level
 });
 
-/*--------------------------------------------------------------------
-Step 2: VIEW GEOJSON POINT DATA ON MAP
---------------------------------------------------------------------*/
-//HINT: Create an empty variable
-//      Use the fetch method to access the GeoJSON from your online repository
-//      Convert the response to JSON format and then store the response in your new variable
+// Create variable for GeoJson point data
 
-let injurygeojson; //CREATE EMPTY VARIABLE
+let injurygeojson; // create EMPTY variable
 fetch('https://raw.githubusercontent.com/mehana99-sketch/ggr472-lab4/refs/heads/main/data/pedcyc_collision_06-21.geojson')
     .then(response => response.json()) // Transforms response into JSON
     .then(response => {
-        console.log(response); // Check response in console (f12 on web)
+        //console.log(response); // Check response in console (f12 on web)
         injurygeojson = response; // store geoJSON as variable from URL (fetched)
     });
 
-map.on('load', () => {
-    map.addSource('injury-points', {
+// 2. LOAD MAP
+
+map.on('load', () => { 
+
+// create envelope
+
+    // must have geojson parameter
+    // added 'bbox' to return array of coordinates (in format minX, minY, maxX, maxY)
+    let boundingboxfeature = turf.envelope(injurygeojson);
+    let boundingboxresized = turf.transformScale(boundingboxfeature, 1.1); // resize envelope
+    let boundingbox = turf.bbox(boundingboxresized); // pick out array as parameter for 'turf.hexGrid'
+    // I had consistent issues with 'boundingboxfeature.bbox' (didn't work after 'turf.transformScale'), had to switch to 'turf.bbox(boundingboxfeature)'
+
+// hexgrid
+
+    // parameters: bbox, cellside (length of side of hexagon), options (optional parameter)
+    let hexgrid = turf.hexGrid(boundingbox, 0.5, { units: "kilometers"});
+
+// add sources, layers
+
+    map.addSource('injury-points', { 
         type : 'geojson',
         data : injurygeojson // I could put the raw URL here, but I need it to be a separate variable for turf.js
     });
@@ -45,20 +54,44 @@ map.on('load', () => {
             'circle-color' : 'pink'
         }
     });
+        // add hexgrid to map
+    map.addSource('hexgrid-source', {
+        type: 'geojson',
+        data : hexgrid
+    });
+    map.addLayer({
+        'id' : 'Tessellation',
+        'type' : 'line',
+        'source' : 'hexgrid-source'
+        // automatically paints plack
+    });
+
+//------------------------------------------------------------------------------
+
+// STUDY IN UNDERSTANDING 'console.log' AND SEARCHING FOR VALUES
+
+    //console.log(boundingbox); // return feature object, 'bbox' listed as a property
+    //console.log(boundingbox.bbox); // return array property (variable.propertyname)
+    //console.log(boundingbox.bbox[0]); // access specific value using index
+
+    // UNDERSTANDING RETURN TYPES
+    // create a feature collection holding the bbox feature 
+    //boundingboxgeojson = {
+    //    "type" : "FeatureCollection",
+    //    "features" : [boundingbox] 
+    //};
+    //console.log(boundingboxgeojson); // this is a feature collection
+    //console.log(boundingboxgeojson.features[0].geometry.coordinates[0][0][1]); // returns 43.590289
+    // returns 'boundingboxgeojson' (feature collection)
+        // -> 'features' (property name) 
+            // -> 'Array' is a specific feature (index 0), note this is the only value in features
+                // -> 'geometry' is an array property
+                    // -> 'coordinates' is an array property within 'geometry' array property
+                        // -> list of arrays from 'coordinates' (index 0)
+                            // -> a coordinate set in array format (index 0) 
+                                // -> y-coordinate: 43.590289 (index 1)
+//------------------------------------------------------------------------------------
 });
-
-
-/*--------------------------------------------------------------------
-    Step 3: CREATE BOUNDING BOX AND HEXGRID
---------------------------------------------------------------------*/
-//HINT: All code to create and view the hexgrid will go inside a map load event handler
-//      First create a bounding box around the collision point data
-//      Access and store the bounding box coordinates as an array variable
-//      Use bounding box coordinates as argument in the turf hexgrid function
-//      **Option: You may want to consider how to increase the size of your bbox to enable greater geog coverage of your hexgrid
-//                Consider return types from different turf functions and required argument types carefully here
-
-
 
 /*--------------------------------------------------------------------
 Step 4: AGGREGATE COLLISIONS BY HEXGRID
