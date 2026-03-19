@@ -1,6 +1,7 @@
 .map {
     position: absolute;
-    top: 0;
+    height: 480px;
+    top: 50px;
     bottom: 0;
     left: 0;
     right: 0;
