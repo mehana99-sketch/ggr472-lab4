@@ -30,10 +30,8 @@
     - Mixed legend styles:
         - Added gradient bar for interpolated polygon symbology
         - Point for collision sites
-
-- pop-ups
-- css styling
-- index.html changes
+    - Added popups to hexagons; data: number of collisions, collision density (rounded to two decimal places)
+    - Styling changes for intuitiveness and aesthetics
 
 ## Issues
 - How can I easily check the parameters for each tool? I'm still not exactly sure why 'turf.bbox()' works on transformed data, but 'variable.bbox()' doesn't.
