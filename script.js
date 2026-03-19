@@ -13,7 +13,8 @@ const map = new mapboxgl.Map({
 
 // Create variable for GeoJson point data
 let injurygeojson; // create EMPTY variable
-fetch('https://raw.githubusercontent.com/mehana99-sketch/ggr472-lab4/refs/heads/main/data/pedcyc_collision_06-21.geojson')
+// fetch('https://raw.githubusercontent.com/mehana99-sketch/ggr472-lab4/refs/heads/main/data/pedcyc_collision_06-21.geojson') // raw data file
+fetch('https://mehana99-sketch.github.io/ggr472-lab4/data/data/pedcyc_collision_06-21.geojson')
     .then(response => response.json()) // Transforms response into JSON
     .then(response => {
         //console.log(response); // Check response in console (f12 on web)
@@ -154,18 +155,17 @@ map.on('mouseleave', 'Tessellation', () => {
     hexID = null;
 }); 
 
-// Popups
-// Click event
+// Popups on click event
 map.on('click', 'Tessellation', (e) => {
     //console.log(e);     // e is the event info triggered and is passed to the function as a parameter (e)
     new mapboxgl.Popup() // Declare new popup object on each click
         .setLngLat(e.lngLat) // Use method to set coordinates of popup based on mouse click location
-        .setHTML("<h6> Hexagon Statistics </h6>"+ "<b>Number of collisions: </b> " + e.features[0].properties.COUNT + '<br>' // Use click event properties to write text for popup
+        .setHTML("<h6> Hexagon Statistics </h6>"+ "<b>Number of collisions: </b> " + 
+            e.features[0].properties.COUNT + '<br>' // Use click event properties to write text for popup
         + "<b>Collision density: </b>" + ((e.features[0].properties.COUNT)/1.66277).toFixed(2) + " per km") // Compute collision density and round to 2 decimal places
         .addTo(map); // Show popup on map
 });
 
-// 
 
 //(section kept for future use)------------------------------------------------------------------------------
 
