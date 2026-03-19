@@ -37,3 +37,4 @@
 
 ## Issues
 - How can I easily check the parameters for each tool? I'm still not exactly sure why 'turf.bbox()' works on transformed data, but 'variable.bbox()' doesn't.
+- Managing the two map styles together was so tiresome and complicated; I want to learn how to do it the right way

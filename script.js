@@ -154,27 +154,18 @@ map.on('mouseleave', 'Tessellation', () => {
     hexID = null;
 }); 
 
-// Gradient legend
+// Popups
+// Click event
+map.on('click', 'Tessellation', (e) => {
+    //console.log(e);     // e is the event info triggered and is passed to the function as a parameter (e)
+    new mapboxgl.Popup() // Declare new popup object on each click
+        .setLngLat(e.lngLat) // Use method to set coordinates of popup based on mouse click location
+        .setHTML("<h6> Hexagon Statistics </h6>"+ "<b>Number of collisions: </b> " + e.features[0].properties.COUNT + '<br>' // Use click event properties to write text for popup
+        + "<b>Collision density: </b>" + ((e.features[0].properties.COUNT)/1.66277).toFixed(2) + " per km") // Compute collision density and round to 2 decimal places
+        .addTo(map); // Show popup on map
+});
 
-// const legenditems = [
-//     { label: '1 (lowest)', colour: 'rgb(255, 215, 255)' },
-//     { label: '20-50', colour: 'rgb(255, 127, 242)' },
-//     { label: '50-122', colour: 'rgb(255, 0, 230)' },
-//     { label: '122 (highest)', colour: 'rgb(177, 0, 159)' },];
-// // For each array item create a row to put the label and colour in
-// legenditems.forEach(({ label, colour }) => {
-//     const row = document.createElement('div'); // each item gets a 'row' as a div - this isn't in the legend yet, we do this later
-//     const colcircle = document.createElement('span'); // create span for colour circle
-
-//     colcircle.className = 'legend-colcircle'; // the colcircle will take on the shape and style properties defined in css
-//     colcircle.style.setProperty('--legendcolour', colour); // a custom property is used to take the colour from the array and apply it to the css class
-
-//     const text = document.createElement('span'); // create span for label text
-//     text.textContent = label; // set text variable to tlegend label value in array
-
-//     row.append(colcircle, text); // add circle and text to legend row
-//     legend.appendChild(row); // add row to legend container
-// });
+// 
 
 //(section kept for future use)------------------------------------------------------------------------------
 
