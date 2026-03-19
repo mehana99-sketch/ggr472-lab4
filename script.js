@@ -34,7 +34,7 @@ map.on('load', () => {
         'type': 'circle',
         'source': 'injury-points',
         'paint': {
-            'circle-radius': 3,
+            'circle-radius': 2,
             'circle-color': 'blue'
         }
     });
@@ -85,78 +85,102 @@ map.on('load', () => {
             'fill-color': [
                 'interpolate', // adjust polygon rgb colour based on count
                 ['linear'], ["get", 'COUNT'],
-                1, 'rgb(255, 255, 255)',
-                20, 'rgb(255, 182, 248)',
-                50, 'rgb(255, 88, 238)',
-                122, 'rgb(137, 0, 123)'],
+                1, 'rgb(255, 215, 255)',
+                20, 'rgb(255, 127, 242)',
+                50, 'rgb(255, 0, 230)',
+                122, 'rgb(177, 0, 159)'],
             'fill-opacity': [
                 'case', ['boolean', ['feature-state', 'hover'], false], 1, 0.5]
             , // CASE and FEATURE STATE expression sets opactity as 0.5 when hover state is false and 1 when updated to true
             'fill-outline-color': 'white'
         }, 'filter': ['>', ['get', 'COUNT'], 0] // filter out points where COUNT = 0
     }, 'Accidents'); // paints below accidents point layer
+});
 
-    // EXTRA MAP CUSTOMIZATION
+// EXTRA MAP CUSTOMIZATION
 
-    // Add map controls
-    map.addControl(new mapboxgl.FullscreenControl(), 'top-left');
-    map.addControl(new mapboxgl.NavigationControl(), 'top-left');
-    // These are automatically placed on top
+// Add map controls
+map.addControl(new mapboxgl.FullscreenControl(), 'top-left');
+map.addControl(new mapboxgl.NavigationControl(), 'top-left');
+// These are automatically placed on top
 
-    // Change mouse symbolization on hexagons
-    map.on('mouseenter', 'Tessellation', () => {
-        map.getCanvas().style.cursor = 'pointer'; // Switch cursor to pointer when mouse is over POI
-        map.on('mouseleave', 'Tessellation', () => {
-            map.getCanvas().style.cursor = ''; // Switch cursor back when leaving POI
-        });
-    });
-
-    // Layer toggles
-    // Hexgrid toggle
-    document.getElementById('hexlayercheck').addEventListener('change', (e) => {
-        if (e.target.checked) {
-            map.setLayoutProperty('Tessellation', 'visibility', 'visible');
-        } else {
-            map.setLayoutProperty('Tessellation', 'visibility', 'none');
-        }
-    })
-    // Collision point toggle
-    document.getElementById('colllayercheck').addEventListener('change', (e) => {
-        if (e.target.checked) {
-            map.setLayoutProperty('Accidents', 'visibility', 'visible');
-        } else {
-            map.setLayoutProperty('Accidents', 'visibility', 'none');
-        }
-    })
-
-    // Highlight hexagon on mouse hover
-    let hexID = null
-    map.on('mousemove', 'Tessellation', (e) => {
-        // Set hover feature state back to false to remove opacity from previous highlighted polygon
-        map.setFeatureState(
-            { source: 'agg_collision', id: hexID },
-            { hover: false }
-        );
-        hexID = e.features[0].id; // Update hexID to featureID
-        map.setFeatureState(
-            { source: 'agg_collision', id: hexID },
-            { hover: true } // Update hover feature state to TRUE to change opacity of layer to 1
-        );
-    });
-    // If mouse leaves the geojson layer, set all hover states to false and provID variable back to null
+// Change mouse symbolization on hexagons
+map.on('mouseenter', 'Tessellation', () => {
+    map.getCanvas().style.cursor = 'pointer'; // Switch cursor to pointer when mouse is over POI
     map.on('mouseleave', 'Tessellation', () => {
+        map.getCanvas().style.cursor = ''; // Switch cursor back when leaving POI
+    });
+});
 
-        map.setFeatureState(
-            { source: 'agg_collision', id: hexID },
-            { hover: false }
-        );
-        hexID = null;
-    }); 
+// Layer toggles
+// Hexgrid toggle
+document.getElementById('hexlayercheck').addEventListener('change', (e) => {
+    if (e.target.checked) {
+        map.setLayoutProperty('Tessellation', 'visibility', 'visible');
+    } else {
+        map.setLayoutProperty('Tessellation', 'visibility', 'none');
+    }
+})
+// Collision point toggle
+document.getElementById('colllayercheck').addEventListener('change', (e) => {
+    if (e.target.checked) {
+        map.setLayoutProperty('Accidents', 'visibility', 'visible');
+    } else {
+        map.setLayoutProperty('Accidents', 'visibility', 'none');
+    }
+})
 
-    //(section kept for future use)------------------------------------------------------------------------------
+// Highlight hexagon on mouse hover
+let hexID = null
+map.on('mousemove', 'Tessellation', (e) => {
+    // Set hover feature state back to false to remove opacity from previous highlighted polygon
+    map.setFeatureState(
+        { source: 'agg_collision', id: hexID },
+        { hover: false }
+    );
+    hexID = e.features[0].id; // Update hexID to featureID
+    map.setFeatureState(
+        { source: 'agg_collision', id: hexID },
+        { hover: true } // Update hover feature state to TRUE to change opacity of layer to 1
+    );
+});
+// If mouse leaves the geojson layer, set all hover states to false and provID variable back to null
+map.on('mouseleave', 'Tessellation', () => {
 
-    // STUDY IN UNDERSTANDING 'console.log' AND SEARCHING FOR VALUES
+    map.setFeatureState(
+        { source: 'agg_collision', id: hexID },
+        { hover: false }
+    );
+    hexID = null;
+}); 
 
+// Gradient legend
+
+// const legenditems = [
+//     { label: '1 (lowest)', colour: 'rgb(255, 215, 255)' },
+//     { label: '20-50', colour: 'rgb(255, 127, 242)' },
+//     { label: '50-122', colour: 'rgb(255, 0, 230)' },
+//     { label: '122 (highest)', colour: 'rgb(177, 0, 159)' },];
+// // For each array item create a row to put the label and colour in
+// legenditems.forEach(({ label, colour }) => {
+//     const row = document.createElement('div'); // each item gets a 'row' as a div - this isn't in the legend yet, we do this later
+//     const colcircle = document.createElement('span'); // create span for colour circle
+
+//     colcircle.className = 'legend-colcircle'; // the colcircle will take on the shape and style properties defined in css
+//     colcircle.style.setProperty('--legendcolour', colour); // a custom property is used to take the colour from the array and apply it to the css class
+
+//     const text = document.createElement('span'); // create span for label text
+//     text.textContent = label; // set text variable to tlegend label value in array
+
+//     row.append(colcircle, text); // add circle and text to legend row
+//     legend.appendChild(row); // add row to legend container
+// });
+
+//(section kept for future use)------------------------------------------------------------------------------
+
+// STUDY IN UNDERSTANDING 'console.log' AND SEARCHING FOR VALUES
+
+//map.on('load', () => {
     //console.log(boundingbox); // return feature object, 'bbox' listed as a property
     //console.log(boundingbox.bbox); // return array property (variable.propertyname)
     //console.log(boundingbox.bbox[0]); // access specific value using index
@@ -178,4 +202,4 @@ map.on('load', () => {
     // -> a coordinate set in array format (index 0) 
     // -> y-coordinate: 43.590289 (index 1)
     //------------------------------------------------------------------------------------
-});
+//});

@@ -27,6 +27,13 @@
         - in 'addLayer', filtered out polygons where COUNT = 0
         - Changed opacity to highlight based on hover (needed paint change and event listener)
     - Checkboxes for each layer's visibility
+    - Mixed legend styles:
+        - Added gradient bar for interpolated polygon symbology
+        - Point for collision sites
+
+- pop-ups
+- css styling
+- index.html changes
 
 ## Issues
 - How can I easily check the parameters for each tool? I'm still not exactly sure why 'turf.bbox()' works on transformed data, but 'variable.bbox()' doesn't.
