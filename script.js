@@ -14,7 +14,7 @@ const map = new mapboxgl.Map({
 // Create variable for GeoJson point data
 let injurygeojson; // create EMPTY variable
 // fetch('https://raw.githubusercontent.com/mehana99-sketch/ggr472-lab4/refs/heads/main/data/pedcyc_collision_06-21.geojson') // raw data file
-fetch('https://mehana99-sketch.github.io/ggr472-lab4/data/data/pedcyc_collision_06-21.geojson')
+fetch('https://mehana99-sketch.github.io/ggr472-lab4/data/pedcyc_collision_06-21.geojson')
     .then(response => response.json()) // Transforms response into JSON
     .then(response => {
         //console.log(response); // Check response in console (f12 on web)
